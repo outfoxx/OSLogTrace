@@ -1,0 +1,24 @@
+name: OSLogTrace
+options:
+  bundleIdPrefix: io.outfoxx
+targets:
+  OSLogTrace:
+    type: framework
+    platform: [macOS, iOS, tvOS, watchOS]
+    deploymentTarget:
+      macOS: 10.12
+      iOS: 10.0
+      tvOS: 10.0
+      watchOS: 3.0
+    sources: [Sources]
+    info:
+      path: Project/${platform}/Info.plist
+    scheme:
+      testTargets:
+        - OSLogTraceTests_${platform}
+  OSLogTraceTests:
+    type: bundle.unit-test
+    platform: [macOS, iOS, tvOS, watchOS]
+    sources:
+      - path: Tests
+        excludes: [LinuxMain.swift]

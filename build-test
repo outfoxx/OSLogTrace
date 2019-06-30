@@ -1,0 +1,4 @@
+xcodegen
+xcodebuild -project OSLogTrace.xcodeproj -scheme OSLogTrace_macOS build test
+xcodebuild -project OSLogTrace.xcodeproj -scheme OSLogTrace_iOS -destination 'platform=iOS Simulator,name=iPhone 8' build test
+xcodebuild -project OSLogTrace.xcodeproj -scheme OSLogTrace_tvOS -destination 'platform=tvOS Simulator,name=Apple TV' build test
