@@ -1,19 +1,20 @@
 //
 //  Signposts.swift
-//  
+//  OSLogTrace
 //
-//  Created by Kevin Wooten on 7/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
+import _SwiftOSOverlayShims
 import Foundation
 import os
 @_exported import os.log
-import _SwiftOSOverlayShims
-
 
 @available(macOS 10.14, iOS 12, tvOS 12, watchOS 5, *)
 public extension OSLog {
-
   /// Creates a signpost ID unique to the this log instance.
   ///
   /// - Returns: A signpost ID unique to this log instance.
@@ -80,7 +81,7 @@ public extension OSLog {
   ///   - id: ID of the signpost
   ///   - message: Formatted log message
   ///
-  func mark(_ type: OSSignpostType, name: String, id: OSSignpostID, message:  @autoclosure () -> LogMessage, dso: UnsafeRawPointer = #dsohandle) {
+  func mark(_ type: OSSignpostType, name: String, id: OSSignpostID, message: @autoclosure () -> LogMessage, dso: UnsafeRawPointer = #dsohandle) {
     let message = message()
     _mark(type, in: self, id: id, name: name,
           format: message.interpolation.format, formatArgs: message.interpolation.arguments, dso: dso)
@@ -154,14 +155,12 @@ public extension OSLog {
     _mark(.end, in: self, id: id, name: name,
           format: message.interpolation.format, formatArgs: message.interpolation.arguments, dso: dso)
   }
-
 }
 
 /// Signpost manager for convenient marking of signposts to a specific log and with a specific ID.
 ///
 @available(macOS 10.14, iOS 12, tvOS 12, watchOS 5, *)
 public struct OSSignpost {
-
   public let log: OSLog
   public let id: OSSignpostID
 
@@ -187,7 +186,7 @@ public struct OSSignpost {
   ///   - name: Name of signpost event
   ///   - message: Formatted log message
   ///
-  public func mark(_ type: OSSignpostType, name: String, message:  @autoclosure () -> LogMessage, dso: UnsafeRawPointer = #dsohandle) {
+  public func mark(_ type: OSSignpostType, name: String, message: @autoclosure () -> LogMessage, dso: UnsafeRawPointer = #dsohandle) {
     let message = message()
     _mark(type, in: log, id: id, name: name,
           format: message.interpolation.format, formatArgs: message.interpolation.arguments, dso: dso)
@@ -255,21 +254,18 @@ public struct OSSignpost {
     _mark(.end, in: log, id: id, name: name,
           format: message.interpolation.format, formatArgs: message.interpolation.arguments, dso: dso)
   }
-
 }
 
-
 @available(macOS 10.14, iOS 12, tvOS 12, watchOS 5, *)
-fileprivate func _mark(_ type: OSSignpostType, in log: OSLog, id: OSSignpostID, name: String, dso: UnsafeRawPointer) {
+private func _mark(_ type: OSSignpostType, in log: OSLog, id: OSSignpostID, name: String, dso: UnsafeRawPointer) {
   let ra = _swift_os_log_return_address()
   name.withCString { namePtr in
     _swift_os_signpost(dso, ra, log, type, namePtr, id.rawValue)
   }
 }
 
-
 @available(macOS 10.14, iOS 12, tvOS 12, watchOS 5, *)
-fileprivate func _mark(_ type: OSSignpostType, in log: OSLog, id: OSSignpostID, name: String, format: String, formatArgs: [CVarArg], dso: UnsafeRawPointer) {
+private func _mark(_ type: OSSignpostType, in log: OSLog, id: OSSignpostID, name: String, format: String, formatArgs: [CVarArg], dso: UnsafeRawPointer) {
   let ra = _swift_os_log_return_address()
   name.withCString { namePtr in
     format.withCString { formatPtr in

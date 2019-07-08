@@ -1,8 +1,17 @@
-import XCTest
+//
+//  LoggingTests.swift
+//  OSLogTrace
+//
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
+//
+
 @testable import OSLogTrace
+import XCTest
 
 class LoggingTests: XCTestCase {
-
   func testLog() {
     let logging = OSLogManager.for(subsystem: Bundle(for: LoggingTests.self).bundleIdentifier ?? "none")
     let logger = logging.for(category: "Tests")
@@ -62,5 +71,4 @@ class LoggingTests: XCTestCase {
     logger.error("This is a test")
     logger.fault("This is a test")
   }
-
 }

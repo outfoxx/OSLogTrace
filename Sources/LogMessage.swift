@@ -2,17 +2,18 @@
 //  LogMessage.swift
 //  OSLogTrace
 //
-//  Created by Kevin Wooten on 6/5/19.
-//  Copyright © 2019 Outfox, Inc. All rights reserved.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
+import _SwiftOSOverlayShims
 import Foundation
 import os
 import os.log
-import _SwiftOSOverlayShims
 
-
-public enum LogArgumentType : String {
+public enum LogArgumentType: String {
   case bytes = "iec-bytes"
   case bitrate = "iec-bitrate"
   case time = "time_t"
@@ -20,21 +21,19 @@ public enum LogArgumentType : String {
   case `default` = ""
 }
 
-public enum LogArgumentView : String {
+public enum LogArgumentView: String {
   case `public` = "public"
   case `private` = "private"
   case `default` = ""
 }
 
-public enum LogArgumentRadix : String {
+public enum LogArgumentRadix: String {
   case decimal = "u"
   case octal = "o"
   case hex = "x"
 }
 
 public struct LogMessage: ExpressibleByStringInterpolation {
-
-
   public struct StringInterpolation: StringInterpolationProtocol {
     var format = ""
     var arguments: [CVarArg] = []
@@ -54,31 +53,31 @@ public struct LogMessage: ExpressibleByStringInterpolation {
       arguments.append(String(describing: value))
     }
 
-    public mutating func appendInterpolation<N>(_ value: N?, view: LogArgumentView = .default) where N : NSObjectProtocol & CVarArg {
+    public mutating func appendInterpolation<N>(_ value: N?, view: LogArgumentView = .default) where N: NSObjectProtocol & CVarArg {
       guard let value = value else { format += "<nil>"; return }
       format += "%\(spec(view: view))@"
       arguments.append(value)
     }
 
-    public mutating func appendInterpolation<S>(_ value: S?, view: LogArgumentView = .default) where S : StringProtocol & CVarArg {
+    public mutating func appendInterpolation<S>(_ value: S?, view: LogArgumentView = .default) where S: StringProtocol & CVarArg {
       guard let value = value else { format += "<nil>"; return }
       format += "%\(spec(view: view))s"
       arguments.append(value)
     }
 
-    public mutating func appendInterpolation<F>(_ value: F?, view: LogArgumentView = .default) where F : BinaryFloatingPoint & CVarArg {
+    public mutating func appendInterpolation<F>(_ value: F?, view: LogArgumentView = .default) where F: BinaryFloatingPoint & CVarArg {
       guard let value = value else { format += "<nil>"; return }
       format += "%\(spec(view: view))\(prefix(value))g"
       arguments.append(value)
     }
 
-    public mutating func appendInterpolation<SI>(_ value: SI?, type: LogArgumentType = .default, view: LogArgumentView = .default) where SI : SignedInteger & CVarArg {
+    public mutating func appendInterpolation<SI>(_ value: SI?, type: LogArgumentType = .default, view: LogArgumentView = .default) where SI: SignedInteger & CVarArg {
       guard let value = value else { format += "<nil>"; return }
       format += "%\(spec(view: view, type: type))\(prefix(value))d"
       arguments.append(value)
     }
 
-    public mutating func appendInterpolation<UI>(_ value: UI?, radix: LogArgumentRadix, view: LogArgumentView = .default) where UI : UnsignedInteger & CVarArg {
+    public mutating func appendInterpolation<UI>(_ value: UI?, radix: LogArgumentRadix, view: LogArgumentView = .default) where UI: UnsignedInteger & CVarArg {
       guard let value = value else { format += "<nil>"; return }
       format += "%\(spec(view: view))\(prefix(value))\(radix.rawValue)"
       arguments.append(value)
@@ -95,7 +94,6 @@ public struct LogMessage: ExpressibleByStringInterpolation {
       format += "%s"
       arguments.append(value.uuidString)
     }
-
   }
 
   let interpolation: StringInterpolation
@@ -107,7 +105,7 @@ public struct LogMessage: ExpressibleByStringInterpolation {
   }
 
   public init(stringInterpolation: StringInterpolation) {
-    self.interpolation = stringInterpolation
+    interpolation = stringInterpolation
   }
 
   public func log(type: OSLogType, log: OSLog, prefix: String, dso: UnsafeRawPointer = #dsohandle) {
@@ -118,7 +116,6 @@ public struct LogMessage: ExpressibleByStringInterpolation {
       }
     }
   }
-
 }
 
 private func spec(view: LogArgumentView = .default, type: LogArgumentType = .default) -> String {
@@ -133,5 +130,5 @@ private func spec(view: LogArgumentView = .default, type: LogArgumentType = .def
 let intPrefixes = ["hh", "h", "l", "ll"]
 let floatPrefixes = ["", "", "L"]
 
-func prefix<T : BinaryInteger>(_ value: T) -> String { return intPrefixes[MemoryLayout<T>.size/8] }
-func prefix<T : BinaryFloatingPoint>(_ value: T) -> String { return floatPrefixes[Int(ceil(Double(MemoryLayout<T>.size)/32.0))] }
+func prefix<T: BinaryInteger>(_ value: T) -> String { return intPrefixes[MemoryLayout<T>.size / 8] }
+func prefix<T: BinaryFloatingPoint>(_ value: T) -> String { return floatPrefixes[Int(ceil(Double(MemoryLayout<T>.size) / 32.0))] }

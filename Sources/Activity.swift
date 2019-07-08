@@ -1,21 +1,22 @@
 //
-//  File.swift
-//  
+//  Activity.swift
+//  OSLogTrace
 //
-//  Created by Kevin Wooten on 7/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
 import os.activity
 
-
 /// An OS activity
 ///
 public struct Activity {
-
   /// Unique ID of the activity
   public typealias ID = os_activity_id_t
-  
+
   /// Activity with no current traits.
   ///
   /// When used as a parent activity, it is the equivalent of a passing the `detached` flag.
@@ -32,9 +33,8 @@ public struct Activity {
   /// Options to create activity objects
   ///
   public struct Options: OptionSet {
-    
     public let rawValue: UInt32
-    
+
     public init(rawValue: UInt32) {
       self.rawValue = rawValue
     }
@@ -47,10 +47,9 @@ public struct Activity {
     /// level activity.  This allows users to see what activity triggered work without actually relating the activities.
     public static let detached = Options(rawValue: OS_ACTIVITY_FLAG_DETACHED.rawValue)
 
-      /// Will only create a new activity if none present.  If an activity ID is already present, a new object will be
-      /// returned with the same activity ID underneath.
+    /// Will only create a new activity if none present.  If an activity ID is already present, a new object will be
+    /// returned with the same activity ID underneath.
     public static let ifNonePresent = Options(rawValue: OS_ACTIVITY_FLAG_IF_NONE_PRESENT.rawValue)
-
   }
 
   /// Returns the ID of the this activity.
@@ -79,8 +78,8 @@ public struct Activity {
   public init(_ description: StaticString, parent: Activity = .current, options: Options = [], dso: UnsafeRawPointer? = #dsohandle) {
     guard let dso = dso.map({ UnsafeMutableRawPointer(mutating: $0) }) else { fatalError("No DSO handle") }
     impl = description.withUTF8Buffer { ptr in
-      return ptr.withMemoryRebound(to: Int8.self) { cptr in
-        return _os_activity_create(dso, cptr.baseAddress!, parent.impl, os_activity_flag_t(rawValue: options.rawValue))
+      ptr.withMemoryRebound(to: Int8.self) { cptr in
+        _os_activity_create(dso, cptr.baseAddress!, parent.impl, os_activity_flag_t(rawValue: options.rawValue))
       }
     }
   }
@@ -96,8 +95,8 @@ public struct Activity {
   public init(_ description: StaticString, parent: Activity = .current, options: Options = [], dso: UnsafeRawPointer? = #dsohandle, block: @convention(block) () -> Void) {
     guard let dso = dso.map({ UnsafeMutableRawPointer(mutating: $0) }) else { fatalError("No DSO handle") }
     impl = description.withUTF8Buffer { ptr in
-      return ptr.withMemoryRebound(to: Int8.self) { cptr in
-        return _os_activity_create(dso, cptr.baseAddress!, parent.impl, os_activity_flag_t(rawValue: options.rawValue))
+      ptr.withMemoryRebound(to: Int8.self) { cptr in
+        _os_activity_create(dso, cptr.baseAddress!, parent.impl, os_activity_flag_t(rawValue: options.rawValue))
       }
     }
     run(block: block)
@@ -114,8 +113,8 @@ public struct Activity {
   public init(_ description: StaticString, parent: Activity = .current, options: Options = [], dso: UnsafeRawPointer? = #dsohandle, block: () throws -> Void) rethrows {
     guard let dso = dso.map({ UnsafeMutableRawPointer(mutating: $0) }) else { fatalError("No DSO handle") }
     impl = description.withUTF8Buffer { ptr in
-      return ptr.withMemoryRebound(to: Int8.self) { cptr in
-        return _os_activity_create(dso, cptr.baseAddress!, parent.impl, os_activity_flag_t(rawValue: options.rawValue))
+      ptr.withMemoryRebound(to: Int8.self) { cptr in
+        _os_activity_create(dso, cptr.baseAddress!, parent.impl, os_activity_flag_t(rawValue: options.rawValue))
       }
     }
     try run(block: block)
@@ -126,7 +125,7 @@ public struct Activity {
   public init(_ impl: OS_os_activity) {
     self.impl = impl
   }
-  
+
   /// Executes a block within the context of the activty.
   ///
   /// - Parameters:
@@ -135,7 +134,7 @@ public struct Activity {
   public func run(block: @convention(block) () -> Void) {
     os_activity_apply(impl, block)
   }
-  
+
   /// Executes a block within the context of the activty, optionally returning a value
   /// or throwing errors.
   ///
@@ -145,23 +144,23 @@ public struct Activity {
   public func run<R>(block: () throws -> R) rethrows -> R {
     var result: Result<R, Error>?
 
-    os_activity_apply(impl, {
+    os_activity_apply(impl) {
       do {
         result = .success(try block())
       }
       catch {
         result = .failure(error)
       }
-    })
+    }
 
     switch result! {
     case .success(let value): return value
     case .failure(let error): try { throw error }()
     }
-    
+
     fatalError()
   }
-  
+
   /// Manual scope manager that allows leaving a previously entered scope at
   /// a specific time.
   ///
@@ -170,7 +169,6 @@ public struct Activity {
   /// managed scope.
   ///
   public struct Scope {
-    
     fileprivate var state = os_activity_scope_state_s()
 
     /// Leaves this scope for the owning activity.
@@ -178,9 +176,8 @@ public struct Activity {
     public mutating func leave() {
       os_activity_scope_leave(&state)
     }
-
   }
-  
+
   /// Creates and automatically enters a scope for the this
   /// activity.
   ///
@@ -228,7 +225,7 @@ public struct Activity {
       }
     }
   }
-  
+
   /// Accesses the "unsafe" interface for activities.
   ///
   /// - Important: The unsafe interface is named as such, and
@@ -240,21 +237,15 @@ public struct Activity {
   /// purposes.
   ///
   public static let unsafe: ActivityUnsafe = _ActivityUnsafe()
-
 }
 
-
 public protocol ActivityUnsafe {
-
   /// Retrieves the current active ID hierarchy
   ///
   func getActiveIDs(max: Int) -> [Activity.ID]
-
 }
 
-
-fileprivate struct _ActivityUnsafe : ActivityUnsafe {
-  
+private struct _ActivityUnsafe: ActivityUnsafe {
   @available(macOS, deprecated: 10.12)
   @available(iOS, deprecated: 10)
   @available(tvOS, deprecated: 10)
@@ -265,9 +256,7 @@ fileprivate struct _ActivityUnsafe : ActivityUnsafe {
     os_activity_get_active(&ids, &idCount)
     return Array(ids.prefix(Int(idCount)))
   }
-  
 }
-
 
 private let _none = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_none"), to: OS_os_activity.self)
 private let _current = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"), to: OS_os_activity.self)

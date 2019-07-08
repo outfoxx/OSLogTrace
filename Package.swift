@@ -16,6 +16,7 @@ let package = Package(
       targets: ["OSLogTrace"]),
   ],
   dependencies: [
+    .package(url: "https://github.com/nicklockwood/SwiftFormat.git", .upToNextMinor(from: "0.40.10"))
   ],
   targets: [
     .target(

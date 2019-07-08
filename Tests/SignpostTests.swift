@@ -1,18 +1,19 @@
 //
 //  SignpostTests.swift
-//  
+//  OSLogTrace
 //
-//  Created by Kevin Wooten on 7/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
-import XCTest
 import OSLogTrace
-
+import XCTest
 
 @available(macOS 10.14, iOS 12, tvOS 12, watchOS 5, *)
 class SignpostTests: XCTestCase {
-
   func testManual() {
     let audience = "World"
 
@@ -32,5 +33,4 @@ class SignpostTests: XCTestCase {
     sp.begin(name: "An event", message: "Hello \(audience)")
     sp.end(name: "An event", message: "Hello \(audience)")
   }
-
 }

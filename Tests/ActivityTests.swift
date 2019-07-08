@@ -1,30 +1,29 @@
 //
 //  ActivityTests.swift
-//  
+//  OSLogTrace
 //
-//  Created by Kevin Wooten on 7/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
-import XCTest
 @testable import OSLogTrace
-
+import XCTest
 
 class ActivityTests: XCTestCase {
-  
   func testRunSimple() {
-    
     let activity = Activity("A Test Activity")
-    
+
     activity.run {
       let activeIDs = Activity.unsafe.getActiveIDs(max: 16)
       XCTAssertEqual(activeIDs.last, activity.id)
     }
   }
-  
+
   func testRunResult() {
-    
     let activity = Activity("A Test Activity")
-    
+
     /// There shoulbe be **NO** `try` required (i.e. ensure "rethrows" not "throws")
     ///
     let x: Int = activity.run {
@@ -34,12 +33,11 @@ class ActivityTests: XCTestCase {
       Thread.sleep(forTimeInterval: 0.2)
       return 10
     }
-    
+
     XCTAssertEqual(x, 10)
   }
-  
+
   func testRunThrows() {
-    
     let activity = Activity("A Test Activity")
 
     XCTAssertThrowsError(
@@ -58,7 +56,6 @@ class ActivityTests: XCTestCase {
   }
 
   func testImmediate() {
-
     /// There shoulbe be **NO** `try` required (i.e. ensure "rethrows" not "throws")
     ///
     _ = Activity("A Test Activity") {
@@ -68,7 +65,6 @@ class ActivityTests: XCTestCase {
   }
 
   func testImmediateThrows() {
-
     XCTAssertThrowsError(
       try Activity("A Test Activity") {
         let activeIDs = Activity.unsafe.getActiveIDs(max: 16)
@@ -76,13 +72,10 @@ class ActivityTests: XCTestCase {
         throw URLError(.badURL)
       }
     )
-
   }
 
   func testManualScope() {
-
     func doTest() {
-
       let activity = Activity("A Test Activity")
       var scope = activity.enter()
       defer { scope.leave() }
@@ -99,5 +92,4 @@ class ActivityTests: XCTestCase {
     // Ensure that `leave` actually left
     XCTAssertTrue(Activity.unsafe.getActiveIDs(max: 16).isEmpty)
   }
-  
 }

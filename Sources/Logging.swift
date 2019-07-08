@@ -1,24 +1,23 @@
 //
 //  Logging.swift
-//  Outfox, Inc
+//  OSLogTrace
 //
-//  Created by Kevin Wooten on 10/10/18.
-//  Copyright © 2018 Outfox, Inc. All rights reserved.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
+import _SwiftOSOverlayShims
 import Foundation
 import os
 @_exported import os.log
-import _SwiftOSOverlayShims
-
 
 public struct OSLogManager {
-
   public var subsystem: String
-  public var baseCategory: String? = nil
+  public var baseCategory: String?
 
   public func `for`(category: String? = nil) -> OSLog {
-
     let fullCategory: String
     switch (category, baseCategory) {
     case (nil, nil):
@@ -40,27 +39,22 @@ public struct OSLogManager {
   }
 }
 
-
 extension OSLogManager {
-
   public static func `for`(subsystem: String, baseCategory: String? = nil, configurator: (OSLogManager) -> Void = { _ in }) -> OSLogManager {
     let logManager = OSLogManager(subsystem: subsystem, baseCategory: baseCategory)
     configurator(logManager)
     return logManager
   }
-
 }
 
-
 public struct OSLogConfig {
-  
   public struct Prefixes {
     public var debug = "⚫️ "
     public var info = "🔵 "
     public var `default` = "💬 "
     public var error = "⚠️ "
     public var fault = "⛔️ "
-    
+
     public func prefix(for type: OSLogType) -> String {
       switch type {
       case .debug: return debug
@@ -73,16 +67,13 @@ public struct OSLogConfig {
       }
     }
   }
-  
+
   public var prefixes = Prefixes()
-  
 }
 
 public var logConfig = OSLogConfig()
 
-
 extension OSLog {
-
   @inline(__always)
   public func log(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .default) else { return }
@@ -100,23 +91,22 @@ extension OSLog {
     guard isEnabled(type: .info) else { return }
     message().log(type: .info, log: self, prefix: logConfig.prefixes.info)
   }
-  
+
   @inline(__always)
   public func debug(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .debug) else { return }
     message().log(type: .debug, log: self, prefix: logConfig.prefixes.debug)
   }
-  
+
   @inline(__always)
   public func error(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .error) else { return }
     message().log(type: .error, log: self, prefix: logConfig.prefixes.error)
   }
-  
+
   @inline(__always)
   public func fault(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .fault) else { return }
     message().log(type: .fault, log: self, prefix: logConfig.prefixes.fault)
   }
-
 }
