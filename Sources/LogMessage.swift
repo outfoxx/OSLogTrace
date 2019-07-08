@@ -11,10 +11,6 @@ import os
 import os.log
 import _SwiftOSOverlayShims
 
-#if os(iOS) || os(tvOS) || os(watchOS)
-import CoreGraphics
-#endif
-
 
 public enum LogArgumentType : String {
   case bytes = "iec-bytes"

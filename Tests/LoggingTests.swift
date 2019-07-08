@@ -1,11 +1,14 @@
 import XCTest
 @testable import OSLogTrace
 
-class OSLogTraceTests: XCTestCase {
+class LoggingTests: XCTestCase {
 
-  func testLogManager() {
-    let logging = OSLogManager.for(subsystem: Bundle(for: OSLogTraceTests.self).bundleIdentifier ?? "none")
+  func testLog() {
+    let logging = OSLogManager.for(subsystem: Bundle(for: LoggingTests.self).bundleIdentifier ?? "none")
     let logger = logging.for(category: "Tests")
+
+    let email = ""
+    logger.info("Hello \(email, view: .private)")
 
     logger.log("This is interpolated \(5, type: .default, view: .default)")
     logger.log("This is interpolated \(5, type: .bitrate, view: .default)")

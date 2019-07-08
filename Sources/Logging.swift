@@ -78,7 +78,7 @@ public struct OSLogConfig {
   
 }
 
-public var config = OSLogConfig()
+public var logConfig = OSLogConfig()
 
 
 extension OSLog {
@@ -86,37 +86,37 @@ extension OSLog {
   @inline(__always)
   public func log(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .default) else { return }
-    message().log(type: .default, log: self, prefix: config.prefixes.default)
+    message().log(type: .default, log: self, prefix: logConfig.prefixes.default)
   }
 
   @inline(__always)
   public func log(type: OSLogType, _ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .default) else { return }
-    message().log(type: type, log: self, prefix: config.prefixes.default)
+    message().log(type: type, log: self, prefix: logConfig.prefixes.default)
   }
 
   @inline(__always)
   public func info(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .info) else { return }
-    message().log(type: .info, log: self, prefix: config.prefixes.info)
+    message().log(type: .info, log: self, prefix: logConfig.prefixes.info)
   }
   
   @inline(__always)
   public func debug(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .debug) else { return }
-    message().log(type: .debug, log: self, prefix: config.prefixes.debug)
+    message().log(type: .debug, log: self, prefix: logConfig.prefixes.debug)
   }
   
   @inline(__always)
   public func error(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .error) else { return }
-    message().log(type: .error, log: self, prefix: config.prefixes.error)
+    message().log(type: .error, log: self, prefix: logConfig.prefixes.error)
   }
   
   @inline(__always)
   public func fault(_ message: @autoclosure () -> LogMessage) {
     guard isEnabled(type: .fault) else { return }
-    message().log(type: .fault, log: self, prefix: config.prefixes.fault)
+    message().log(type: .fault, log: self, prefix: logConfig.prefixes.fault)
   }
 
 }
