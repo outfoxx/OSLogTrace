@@ -1,4 +1,6 @@
 # 📒OSLogTrace
+[![Build Status](https://travis-ci.org/outfoxx/OSLogTrace.svg?branch=master)](https://travis-ci.org/outfoxx/OSLogTrace)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/outfoxx/oslogtrace)
 ## API for Apple's System Log, Signposts and Activty tracing built for Swift
 The framework uses features introduced in Swift 5 to make interacting with Apple system log natural and easy from Swift code. Swift
 oriented convenience APIs for logging signposts and activity tracing are also included to make their use natural as well.
